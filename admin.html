@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - KitchenIQ Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f4f7fa;
+            color: #333;
+        }
+
+        header {
+            background: #e67e22;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 1.8rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logout-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .logout-btn:hover {
+            background: #c0392b;
+        }
+
+        .admin-nav {
+            background: #34495e;
+            padding: 1rem;
+        }
+
+        .admin-nav ul {
+            list-style: none;
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .admin-nav a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+
+        .admin-nav a:hover, .admin-nav a.active {
+            background: #2c3e50;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            font-size: 2rem;
+            color: #e67e22;
+            margin-bottom: 0.5rem;
+        }
+
+        .admin-section {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        h2 {
+            color: #e67e22;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 0.8rem;
+            text-align: left;
+        }
+
+        th {
+            background: #e67e22;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .refresh-btn, .delete-btn {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            margin: 0.2rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .refresh-btn {
+            background: #e67e22;
+            color: white;
+        }
+
+        .refresh-btn:hover {
+            background: #d35400;
+        }
+
+        .delete-btn {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            background: #27ae60;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateX(150%);
+            transition: transform 0.4s ease;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        @media (max-width: 768px) {
+            .admin-nav ul {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            table {
+                font-size: 0.9rem;
+            }
+            
+            th, td {
+                padding: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1><i class="fas fa-utensils"></i> KitchenIQ Hub Admin</h1>
+        <div class="user-info">
+            <span id="admin-username">Admin</span>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </header>
+    
+    <nav class="admin-nav">
+        <ul>
+            <li><a href="admin.html" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="admin-users.html"><i class="fas fa-users"></i> Users</a></li>
+        </ul>
+    </nav>
+    
+    <main>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3 id="total-users">0</h3>
+                <p>Total Users</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="total-contacts">0</h3>
+                <p>Contact Submissions</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="total-newsletters">0</h3>
+                <p>Newsletter Subscribers</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="total-estimates">0</h3>
+                <p>Kitchen Estimates</p>
+            </div>
+        </div>
+        
+        <section class="admin-section">
+            <h2><i class="fas fa-envelope"></i> Contact Submissions</h2>
+            <button class="refresh-btn" onclick="loadContacts()">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+            <table id="contacts-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Subject</th>
+                        <th>Message</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </section>
+
+        <section class="admin-section">
+            <h2><i class="fas fa-newspaper"></i> Newsletter Subscribers</h2>
+            <button class="refresh-btn" onclick="loadNewsletters()">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+            <table id="newsletters-table">
+                <thead>
+                    <tr>
+                        <th>Email</th>
+                        <th>Subscribed At</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </section>
+
+        <section class="admin-section">
+            <h2><i class="fas fa-calculator"></i> Kitchen Estimates</h2>
+            <button class="refresh-btn" onclick="loadCostEstimates()">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+            <table id="estimates-table">
+                <thead>
+                    <tr>
+                        <th>Kitchen Products</th>
+                        <th>Total Cost</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </section>
+    </main>
+    
+    <div class="notification" id="notification">
+        <span id="notification-message">Operation completed successfully!</span>
+    </div>
+
+    <script>
+        const API_BASE = "http://localhost:3000/api";
+
+        // Load all data on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadStats();
+            loadContacts();
+            loadNewsletters();
+            loadCostEstimates();
+        });
+
+        async function loadStats() {
+            try {
+                const response = await fetch(`${API_BASE}/admin/stats`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('total-users').textContent = data.stats.totalUsers;
+                    document.getElementById('total-contacts').textContent = data.stats.totalContacts;
+                    document.getElementById('total-newsletters').textContent = data.stats.totalNewsletters;
+                    document.getElementById('total-estimates').textContent = data.stats.totalEstimates;
+                }
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        async function loadContacts() {
+            try {
+                const response = await fetch(`${API_BASE}/admin/contacts`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const tbody = document.querySelector("#contacts-table tbody");
+                    tbody.innerHTML = "";
+                    
+                    data.contacts.forEach(contact => {
+                        const row = `
+                            <tr>
+                                <td>${contact.name}</td>
+                                <td>${contact.email}</td>
+                                <td>${contact.subject}</td>
+                                <td>${contact.message.substring(0, 50)}${contact.message.length > 50 ? '...' : ''}</td>
+                                <td>${new Date(contact.createdAt).toLocaleDateString()}</td>
+                                <td>
+                                    <button class="delete-btn" onclick="deleteContact(${contact.id})">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </td>
+                            </tr>`;
+                        tbody.innerHTML += row;
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading contacts:', error);
+                showNotification('Error loading contacts', 'error');
+            }
+        }
+
+        async function loadNewsletters() {
+            try {
+                const response = await fetch(`${API_BASE}/admin/newsletters`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const tbody = document.querySelector("#newsletters-table tbody");
+                    tbody.innerHTML = "";
+                    
+                    data.newsletters.forEach(newsletter => {
+                        const row = `
+                            <tr>
+                                <td>${newsletter.email}</td>
+                                <td>${new Date(newsletter.subscribedAt).toLocaleDateString()}</td>
+                                <td>
+                                    <button class="delete-btn" onclick="deleteNewsletter(${newsletter.id})">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </td>
+                            </tr>`;
+                        tbody.innerHTML += row;
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading newsletters:', error);
+                showNotification('Error loading newsletters', 'error');
+            }
+        }
+
+        async function loadCostEstimates() {
+            try {
+                const response = await fetch(`${API_BASE}/admin/cost-estimates`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const tbody = document.querySelector("#estimates-table tbody");
+                    tbody.innerHTML = "";
+                    
+                    data.estimates.forEach(estimate => {
+                        const productsList = estimate.selectedProducts.map(p => 
+                            `${p.name} (${p.quantity})`
+                        ).join(', ');
+                        
+                        const row = `
+                            <tr>
+                                <td>${productsList}</td>
+                                <td>₹${estimate.totalCost}</td>
+                                <td>${new Date(estimate.createdAt).toLocaleDateString()}</td>
+                                <td>
+                                    <button class="delete-btn" onclick="deleteEstimate(${estimate.id})">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </td>
+                            </tr>`;
+                        tbody.innerHTML += row;
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading estimates:', error);
+                showNotification('Error loading kitchen estimates', 'error');
+            }
+        }
+
+        async function deleteContact(id) {
+            if (!confirm('Are you sure you want to delete this contact?')) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/contacts/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showNotification('Contact deleted successfully');
+                    loadContacts();
+                    loadStats();
+                } else {
+                    showNotification('Error deleting contact', 'error');
+                }
+            } catch (error) {
+                console.error('Error deleting contact:', error);
+                showNotification('Error deleting contact', 'error');
+            }
+        }
+
+        async function deleteNewsletter(id) {
+            if (!confirm('Are you sure you want to delete this subscriber?')) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/newsletters/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showNotification('Subscriber deleted successfully');
+                    loadNewsletters();
+                    loadStats();
+                } else {
+                    showNotification('Error deleting subscriber', 'error');
+                }
+            } catch (error) {
+                console.error('Error deleting newsletter:', error);
+                showNotification('Error deleting subscriber', 'error');
+            }
+        }
+
+        async function deleteEstimate(id) {
+            if (!confirm('Are you sure you want to delete this estimate?')) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/estimates/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showNotification('Estimate deleted successfully');
+                    loadCostEstimates();
+                    loadStats();
+                } else {
+                    showNotification('Error deleting estimate', 'error');
+                }
+            } catch (error) {
+                console.error('Error deleting estimate:', error);
+                showNotification('Error deleting estimate', 'error');
+            }
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            const messageEl = document.getElementById('notification-message');
+            
+            messageEl.textContent = message;
+            notification.style.background = type === 'error' ? '#e74c3c' : '#27ae60';
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        function logout() {
+            window.location.href = '/';
+        }
+    </script>
+</body>
+</html>

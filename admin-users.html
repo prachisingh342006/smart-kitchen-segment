@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management - KitchenIQ Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f4f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        header {
+            background: #e67e22;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            margin: 0;
+            font-size: 1.8rem;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logout-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .logout-btn:hover {
+            background: #c0392b;
+        }
+        
+        .admin-nav {
+            background: #34495e;
+            padding: 1rem;
+        }
+        
+        .admin-nav ul {
+            list-style: none;
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .admin-nav a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+        
+        .admin-nav a:hover, .admin-nav a.active {
+            background: #2c3e50;
+        }
+        
+        main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .stat-card h3 {
+            font-size: 2rem;
+            color: #e67e22;
+            margin-bottom: 0.5rem;
+        }
+        
+        .admin-section {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        h2 {
+            color: #e67e22;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .search-box {
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .search-box input {
+            padding: 0.7rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            flex: 1;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        
+        th, td {
+            border: 1px solid #ddd;
+            padding: 0.8rem;
+            text-align: left;
+        }
+        
+        th {
+            background: #e67e22;
+            color: white;
+        }
+        
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        
+        .refresh-btn, .delete-btn {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            margin: 0.2rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .refresh-btn {
+            background: #e67e22;
+            color: white;
+        }
+        
+        .refresh-btn:hover {
+            background: #d35400;
+        }
+        
+        .delete-btn {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+        
+        .password-cell {
+            font-family: monospace;
+            position: relative;
+        }
+        
+        .masked-password {
+            letter-spacing: 2px;
+        }
+        
+        .toggle-password {
+            background: none;
+            border: none;
+            color: #e67e22;
+            cursor: pointer;
+            margin-left: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            background: #27ae60;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateX(150%);
+            transition: transform 0.4s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .user-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .admin-nav ul {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            table {
+                font-size: 0.9rem;
+            }
+            
+            th, td {
+                padding: 0.5rem;
+            }
+            
+            .search-box {
+                flex-direction: column;
+            }
+            
+            .user-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1><i class="fas fa-users-cog"></i> User Management</h1>
+        <div class="user-info">
+            <span id="admin-username">Admin</span>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </header>
+    
+    <nav class="admin-nav">
+        <ul>
+            <li><a href="admin.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="admin-users.html" class="active"><i class="fas fa-users"></i> Users</a></li>
+        </ul>
+    </nav>
+    
+    <main>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3 id="total-users">0</h3>
+                <p>Total Users</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="active-users">0</h3>
+                <p>Active Users (Last 7 days)</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="new-users">0</h3>
+                <p>New Users (Today)</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="total-estimates">0</h3>
+                <p>Kitchen Estimates</p>
+            </div>
+        </div>
+        
+        <section class="admin-section">
+            <h2><i class="fas fa-user-friends"></i> Registered Users</h2>
+            
+            <div class="search-box">
+                <input type="text" id="search-users" placeholder="Search by username or email...">
+                <button class="refresh-btn" onclick="loadUsers()">
+                    <i class="fas fa-sync-alt"></i> Refresh Users
+                </button>
+            </div>
+            
+            <table id="users-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Password</th>
+                        <th>Registered Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="users-tbody">
+                    <!-- Users will be loaded here -->
+                </tbody>
+            </table>
+        </section>
+
+        <section class="admin-section">
+            <h2><i class="fas fa-chart-bar"></i> User Statistics</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                <div style="background: #fdebd0; padding: 1rem; border-radius: 8px;">
+                    <h3 style="color: #e67e22; margin-bottom: 0.5rem;">Registration Trends</h3>
+                    <p>Users registered this week: <strong id="week-users">0</strong></p>
+                    <p>Users registered this month: <strong id="month-users">0</strong></p>
+                </div>
+                <div style="background: #d5f5e3; padding: 1rem; border-radius: 8px;">
+                    <h3 style="color: #27ae60; margin-bottom: 0.5rem;">User Activity</h3>
+                    <p>Most active time: <strong id="active-time">Morning</strong></p>
+                    <p>Average registrations per day: <strong id="avg-daily">0</strong></p>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <div class="notification" id="notification">
+        <i class="fas fa-check-circle"></i>
+        <span id="notification-message">Operation completed successfully!</span>
+    </div>
+
+    <script>
+        const API_BASE = "http://localhost:3000/api";
+        let allUsers = [];
+        let allEstimates = [];
+
+        // Load all data on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUsers();
+            loadStats();
+            setupSearch();
+        });
+
+        function setupSearch() {
+            const searchInput = document.getElementById('search-users');
+            searchInput.addEventListener('input', function() {
+                filterUsers(this.value.toLowerCase());
+            });
+        }
+
+        function filterUsers(searchTerm) {
+            if (!searchTerm) {
+                displayUsers(allUsers);
+                return;
+            }
+            
+            const filteredUsers = allUsers.filter(user => 
+                user.username.toLowerCase().includes(searchTerm) ||
+                user.email.toLowerCase().includes(searchTerm)
+            );
+            
+            displayUsers(filteredUsers);
+        }
+
+        async function loadUsers() {
+            try {
+                showNotification('Loading users...', 'info');
+                
+                const [usersResponse, estimatesResponse] = await Promise.all([
+                    fetch(`${API_BASE}/admin/users`),
+                    fetch(`${API_BASE}/admin/cost-estimates`)
+                ]);
+
+                const usersData = await usersResponse.json();
+                const estimatesData = await estimatesResponse.json();
+                
+                if (usersData.success && estimatesData.success) {
+                    allUsers = usersData.users;
+                    allEstimates = estimatesData.estimates;
+                    
+                    displayUsers(allUsers);
+                    updateStats(allUsers, allEstimates);
+                    showNotification('Users loaded successfully');
+                } else {
+                    throw new Error('Failed to load data');
+                }
+            } catch (error) {
+                console.error('Error loading users:', error);
+                showNotification('Error loading users data', 'error');
+            }
+        }
+
+        function displayUsers(users) {
+            const tbody = document.getElementById('users-tbody');
+            tbody.innerHTML = '';
+            
+            if (users.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 2rem; color: #666;">
+                            <i class="fas fa-users" style="font-size: 2rem; margin-bottom: 1rem; display: block; opacity: 0.5;"></i>
+                            No users found
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            users.forEach(user => {
+                const maskedPassword = '*'.repeat(8);
+                const registerDate = new Date(user.createdAt).toLocaleDateString();
+                const userEstimates = allEstimates.filter(estimate => 
+                    estimate.userId === user.id
+                ).length;
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${user.id}</td>
+                    <td>
+                        <strong>${user.username}</strong>
+                        ${userEstimates > 0 ? `<br><small style="color: #666;">${userEstimates} kitchen estimate(s)</small>` : ''}
+                    </td>
+                    <td>${user.email}</td>
+                    <td class="password-cell">
+                        <span class="masked-password">${maskedPassword}</span>
+                        <button class="toggle-password" onclick="togglePassword(this, '${user.password}')" title="Show Password">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </td>
+                    <td>${registerDate}</td>
+                    <td>
+                        <div class="user-actions">
+                            <button class="delete-btn" onclick="deleteUser(${user.id})" title="Delete User">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                            <button class="refresh-btn" onclick="viewUserDetails(${user.id})" title="View Details">
+                                <i class="fas fa-eye"></i> Details
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function togglePassword(button, realPassword) {
+            const passwordSpan = button.previousElementSibling;
+            const icon = button.querySelector('i');
+            
+            if (passwordSpan.classList.contains('masked-password')) {
+                passwordSpan.textContent = realPassword;
+                passwordSpan.classList.remove('masked-password');
+                icon.className = 'fas fa-eye-slash';
+                button.title = 'Hide Password';
+            } else {
+                passwordSpan.textContent = '*'.repeat(8);
+                passwordSpan.classList.add('masked-password');
+                icon.className = 'fas fa-eye';
+                button.title = 'Show Password';
+            }
+        }
+
+        function updateStats(users, estimates) {
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const weekAgo = new Date(today);
+            weekAgo.setDate(weekAgo.getDate() - 7);
+            const monthAgo = new Date(today);
+            monthAgo.setMonth(monthAgo.getMonth() - 1);
+
+            // Basic stats
+            document.getElementById('total-users').textContent = users.length;
+            document.getElementById('total-estimates').textContent = estimates.length;
+
+            // Active users (registered in last 7 days)
+            const activeUsers = users.filter(user => 
+                new Date(user.createdAt) >= weekAgo
+            ).length;
+            document.getElementById('active-users').textContent = activeUsers;
+
+            // New users today
+            const newUsersToday = users.filter(user => {
+                const userDate = new Date(user.createdAt);
+                return userDate >= today;
+            }).length;
+            document.getElementById('new-users').textContent = newUsersToday;
+
+            // Additional statistics
+            const weekUsers = users.filter(user => 
+                new Date(user.createdAt) >= weekAgo
+            ).length;
+            const monthUsers = users.filter(user => 
+                new Date(user.createdAt) >= monthAgo
+            ).length;
+
+            document.getElementById('week-users').textContent = weekUsers;
+            document.getElementById('month-users').textContent = monthUsers;
+
+            // Calculate average daily registrations
+            if (users.length > 0) {
+                const firstUserDate = new Date(Math.min(...users.map(u => new Date(u.createdAt))));
+                const daysDiff = Math.max(1, Math.ceil((now - firstUserDate) / (1000 * 60 * 60 * 24)));
+                const avgDaily = (users.length / daysDiff).toFixed(1);
+                document.getElementById('avg-daily').textContent = avgDaily;
+            }
+
+            // Determine most active time (simplified)
+            const hours = users.map(user => new Date(user.createdAt).getHours());
+            const morning = hours.filter(h => h >= 6 && h < 12).length;
+            const afternoon = hours.filter(h => h >= 12 && h < 18).length;
+            const evening = hours.filter(h => h >= 18 && h < 24).length;
+            const night = hours.filter(h => h >= 0 && h < 6).length;
+
+            const times = { morning, afternoon, evening, night };
+            const mostActive = Object.keys(times).reduce((a, b) => times[a] > times[b] ? a : b);
+            document.getElementById('active-time').textContent = mostActive.charAt(0).toUpperCase() + mostActive.slice(1);
+        }
+
+        async function deleteUser(userId) {
+            if (!confirm('Are you sure you want to delete this user? This action cannot be undone and will also remove their kitchen estimates.')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/users/${userId}`, {
+                    method: 'DELETE'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showNotification('User deleted successfully');
+                    loadUsers(); // Reload all data
+                } else {
+                    showNotification('Error deleting user: ' + data.message, 'error');
+                }
+            } catch (error) {
+                console.error('Error deleting user:', error);
+                showNotification('Error deleting user', 'error');
+            }
+        }
+
+        function viewUserDetails(userId) {
+            const user = allUsers.find(u => u.id === userId);
+            if (user) {
+                const userEstimates = allEstimates.filter(estimate => estimate.userId === userId);
+                
+                const details = `
+User ID: ${user.id}
+Username: ${user.username}
+Email: ${user.email}
+Registered: ${new Date(user.createdAt).toLocaleDateString()}
+Total Kitchen Estimates: ${userEstimates.length}
+Last Estimate: ${userEstimates.length > 0 ? new Date(userEstimates[userEstimates.length - 1].createdAt).toLocaleDateString() : 'None'}
+                `.trim();
+                
+                alert('User Details:\n\n' + details);
+            }
+        }
+
+        async function loadStats() {
+            try {
+                const response = await fetch(`${API_BASE}/admin/stats`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Stats are updated in updateStats function
+                    console.log('Stats loaded successfully');
+                }
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            const messageEl = document.getElementById('notification-message');
+            
+            messageEl.textContent = message;
+            
+            // Set color based on type
+            const colors = {
+                success: '#27ae60',
+                error: '#e74c3c',
+                info: '#3498db',
+                warning: '#f39c12'
+            };
+            
+            notification.style.background = colors[type] || colors.success;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        function logout() {
+            window.location.href = '/';
+        }
+
+        // Auto-refresh every 30 seconds
+        setInterval(() => {
+            loadUsers();
+        }, 30000);
+    </script>
+</body>
+</html>
