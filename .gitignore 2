@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+env/
+venv/
+
+# OS files
+.DS_Store
+
+# IDE
+.vscode/
+
+# Logs
+*.log
+
+# Secrets
+.env
