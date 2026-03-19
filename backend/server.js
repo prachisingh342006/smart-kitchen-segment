@@ -298,9 +298,9 @@ app.post("/api/cost-estimate", (req, res) => {
     try {
         const { selectedProducts, totalCost } = req.body;
 
-        console.log("💰 Cost estimate request:", { 
-            products: selectedProducts?.length, 
-            totalCost 
+        console.log("💰 Cost estimate request:", {
+            products: selectedProducts?.length,
+            totalCost
         });
 
         if (!selectedProducts || selectedProducts.length === 0) {
@@ -450,7 +450,7 @@ app.delete("/api/admin/contacts/:id", (req, res) => {
     try {
         const id = parseInt(req.params.id);
         const index = contacts.findIndex(c => c.id === id);
-        
+
         if (index === -1) {
             return res.status(404).json({
                 success: false,
@@ -477,7 +477,7 @@ app.delete("/api/admin/newsletters/:id", (req, res) => {
     try {
         const id = parseInt(req.params.id);
         const index = newsletters.findIndex(n => n.id === id);
-        
+
         if (index === -1) {
             return res.status(404).json({
                 success: false,
@@ -504,7 +504,7 @@ app.delete("/api/admin/users/:id", (req, res) => {
     try {
         const id = parseInt(req.params.id);
         const index = users.findIndex(u => u.id === id);
-        
+
         if (index === -1) {
             return res.status(404).json({
                 success: false,
@@ -531,7 +531,7 @@ app.delete("/api/admin/estimates/:id", (req, res) => {
     try {
         const id = parseInt(req.params.id);
         const index = costEstimates.findIndex(e => e.id === id);
-        
+
         if (index === -1) {
             return res.status(404).json({
                 success: false,
