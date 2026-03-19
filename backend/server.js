@@ -554,21 +554,25 @@ app.delete("/api/admin/estimates/:id", (req, res) => {
 });
 
 // ==========================
-// 🚀 START SERVER
+// 🚀 START SERVER (LOCAL ONLY)
 // ==========================
-app.listen(PORT, () => {
-    console.log("=".repeat(60));
-    console.log("🚀 KITCHENIQ HUB SERVER STARTED SUCCESSFULLY!");
-    console.log("=".repeat(60));
-    console.log(`📍 Local: http://localhost:${PORT}`);
-    console.log(`📍 Alternative: http://127.0.0.1:${PORT}`);
-    console.log("=".repeat(60));
-    console.log("📊 Endpoints:");
-    console.log(`   🔗 Main App:    http://localhost:${PORT}/`);
-    console.log(`   🔗 Admin:       http://localhost:${PORT}/admin`);
-    console.log(`   🔗 Users:       http://localhost:${PORT}/admin-users`);
-    console.log(`   🔗 Health:      http://localhost:${PORT}/api/health`);
-    console.log("=".repeat(60));
-    console.log("💡 Storage: In-memory (data persists until server restart)");
-    console.log("=".repeat(60));
-});
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log("=".repeat(60));
+        console.log("🚀 KITCHENIQ HUB SERVER STARTED SUCCESSFULLY!");
+        console.log("=".repeat(60));
+        console.log(`📍 Local: http://localhost:${PORT}`);
+        console.log(`📍 Alternative: http://127.0.0.1:${PORT}`);
+        console.log("=".repeat(60));
+        console.log("📊 Endpoints:");
+        console.log(`   🔗 Main App:    http://localhost:${PORT}/`);
+        console.log(`   🔗 Admin:       http://localhost:${PORT}/admin`);
+        console.log(`   🔗 Users:       http://localhost:${PORT}/admin-users`);
+        console.log(`   🔗 Health:      http://localhost:${PORT}/api/health`);
+        console.log("=".repeat(60));
+        console.log("💡 Storage: In-memory (data persists until server restart)");
+        console.log("=".repeat(60));
+    });
+}
+
+module.exports = app;
